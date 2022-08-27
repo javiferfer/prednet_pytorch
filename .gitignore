@@ -4,8 +4,8 @@ log_*.txt
 model.dot
 poetry.lock
 
-# .pylintrc
-# .vscode/*
+.pylintrc
+.vscode/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
