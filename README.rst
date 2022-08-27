@@ -14,7 +14,7 @@ Set environment
 
 Using Poetry to manage the dependencies:
 
-```console
+```
 poetry install
 ```
 
@@ -24,19 +24,19 @@ Preparing data
 Put the target video file "YOUR_VIDEO" in "YOUR_DATA" folder.
 Execute the following command to generate still images from the video.
 
-```console
+```
 python PredNet/generate_image.py YOUR_DATA/YOUR_VIDEO -d YOUR_DATA
 ```
 
 To change the width of the image, use the -w option.
 
-```console
+```
 python PredNet/generate_image.py YOUR_DATA/YOUR_VIDEO -d YOUR_DATA -w 160
 ```
 
 To change the width of the image, use the -g option.
 
-```console
+```
 python PredNet/generate_image.py data/YOUR_VIDEO -d data -w 160 -g 120
 ```
 
@@ -46,13 +46,13 @@ By default, the latter half of the video will be the test data.
 
 Execute the following command to generate dB data from an audio file.
 
-```console
+```
 python generate_spectrum.py wave_to_db rain_1.mp3 --with_image
 ```
 
 Execute the following command to generate audio files from dB files in the result folder.
 
-```console
+```
 python generate_spectrum.py db_to_wave result --with_image
 ```
 
@@ -61,13 +61,13 @@ Training
 ================================
 Execute the following command to train the model.
 
-```console
+```
 python PredNet/main.py -i YOUR_DATA/train_list.txt
 ```
 
 E.g.:
 
-```console
+```
 python main.py -i data/train_list.txt
 ```
 
@@ -82,14 +82,14 @@ data4/train_list.txt
 ....
 and then, execute the following command.
 
-```console
+```
 python PredNet/main.py -seq sequence_list.txt -g 0
 python main.py -i data/train_list.txt --save 40 --period 100
 ```
 
 If you train from dB files, execute the following command.
 
-```console
+```
 python main.py --channels 2,48,96,192 --size 160,512
 ```
 
@@ -98,12 +98,12 @@ Prediction
 ================================
 Generate predicted frames with the following command.
 
-```console
+```
 python PredNet/main.py -i YOUR_DATA/test_list.txt --initmodel models/YOUR_MODEL -l NUMBER_OF_INPUT_IMAGES --ext NUMBER_OF_PREDICTED_IMAGES
 ```
 
 E.g.:
-```console
+```
 python src/test/main.py -i data/test_list.txt --initmodel models/100.pth
 ```
 
