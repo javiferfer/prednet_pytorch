@@ -13,7 +13,7 @@ parser.add_argument('--crop_size', '-s', default='160,120',
 parser.add_argument('--pixel_step', '-p', type=int, default=5, help='Amount of movement in one step.')
 parser.add_argument('--num_steps', '-n', type=int, default=500, help='The number of images to generate.')
 args = parser.parse_args()
-
+ 
 crop_size = args.crop_size.split(',')
 crop_size = np.array([int(crop_size[1]), int(crop_size[0])], dtype=np.int32)
 img = cv2.imread(args.input_image)

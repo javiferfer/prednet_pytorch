@@ -1,16 +1,18 @@
 import os
+import h5py
+
 from io import BytesIO, IOBase
 import numpy as np
 from PIL import Image, ImageCms
-import h5py
+from tqdm import tqdm
 
 from torch.utils.data import Dataset
-from tqdm import tqdm
 
 
 srgb_p = ImageCms.createProfile("sRGB")
 lab_p  = ImageCms.createProfile("LAB")
 rgb2lab = ImageCms.buildTransformFromOpenProfiles(srgb_p, lab_p, "RGB", "LAB")
+
 
 def read_image(path, size, ch, c_space="RGB"):
     if isinstance(path, IOBase) or os.path.splitext(path)[-1] == ".jpg":
@@ -58,9 +60,6 @@ class ImageListDataset(Dataset):
         self.c_space = c_space
 
     def __getitem__(self, index):
-        # print("target_idx: ", index)
-        # print(self.img_paths[int(index * self.input_len):int((index + 1) * self.input_len)])
-        # print(self.img_paths[int((index + 1) * self.input_len)])
         assert self.img_paths is not None
 
         X = np.ndarray((1, self.input_len, self.img_ch, self.img_h, self.img_w), dtype=np.float32)

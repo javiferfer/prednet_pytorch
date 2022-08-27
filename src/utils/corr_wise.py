@@ -1,9 +1,13 @@
+'''
+Loss function
+'''
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from flow_utils import warp, clip_flow, normalize_flow
 
-import pdb
+from src.utils.flow_utils import warp, clip_flow, normalize_flow
+
+
 
 class CorrWise(nn.Module):
     def __init__(self, 
@@ -23,7 +27,8 @@ class CorrWise(nn.Module):
                  no_forward_warp=False,
                  reduction_clip=False,
                  scale_clip=False,
-                 device=None):
+                 device=None,
+                 **kwargs):
         '''
         base_loss [func] : 
             takes in two torch images, and calculates a distance
@@ -96,13 +101,13 @@ class CorrWise(nn.Module):
         super(CorrWise, self).__init__()
 
         if flow_method == 'RAFT':
-            from flow_utils import RAFT
+            from src.utils.flow_utils import RAFT
             self.flow_method = RAFT()
         elif flow_method == 'PWC':
-            from flow_utils import PWCNet
+            from src.utils.flow_utils import PWCNet
             self.flow_method = PWCNet()
         elif flow_method == 'FBFlow':
-            from flow_utils import FBFlow
+            from src.utils.flow_utils import FBFlow
             self.flow_method = FBFlow()
         else:
             self.flow_method = flow_method

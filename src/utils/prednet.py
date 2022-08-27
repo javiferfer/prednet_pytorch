@@ -1,9 +1,12 @@
-from collections import defaultdict
 import math
+
+from collections import defaultdict
+
 import torch
 import torch.nn as nn
 from torch.nn import functional as F
-from convlstmcell import ConvLSTMCell
+
+from src.utils.convlstmcell import ConvLSTMCell
 
 
 class SatLU(nn.Module):
@@ -39,7 +42,7 @@ class AddSin(nn.Module):
 
 
 class PredNet(nn.Module):
-    def __init__(self, A_channels, R_channels=None,
+    def __init__(self, a_channels, r_channels=None,
                  output_mode='error',
                  round_mode="down_up_down",
                  device=torch.device("cpu"),
@@ -48,11 +51,11 @@ class PredNet(nn.Module):
     ):
         super(PredNet, self).__init__()
         self.device = device
-        if R_channels is None:
-            R_channels = A_channels
-        self.r_channels = R_channels + [0,]  # for convenience
-        self.a_channels = A_channels
-        self.n_layers = len(R_channels)
+        if r_channels is None:
+            r_channels = a_channels
+        self.r_channels = r_channels + [0,]  # for convenience
+        self.a_channels = a_channels
+        self.n_layers = len(r_channels)
         self.output_mode = output_mode
         self.round_mode = round_mode
         self.loss = nn.MSELoss(reduction="none")
@@ -79,9 +82,9 @@ class PredNet(nn.Module):
         self.maxpool = nn.MaxPool2d(kernel_size=2, stride=2)
 
         for l in range(self.n_layers - 1):
-            update_A = nn.Sequential(nn.Conv2d(2 * self.a_channels[l], self.a_channels[l + 1], (3, 3), padding=1), AddSin(amp, omg), self.maxpool)
-            setattr(self, 'update_A{}'.format(l), update_A)
-            self.register_hooks(update_A, "UpdateA_layer{}".format(l))
+            update_a = nn.Sequential(nn.Conv2d(2 * self.a_channels[l], self.a_channels[l + 1], (3, 3), padding=1), AddSin(amp, omg), self.maxpool)
+            setattr(self, 'update_a{}'.format(l), update_a)
+            self.register_hooks(update_a, "UpdateA_layer{}".format(l))
 
         self.reset_parameters()
 
@@ -106,8 +109,8 @@ class PredNet(nn.Module):
             E = torch.cat([pos, neg], 1)
             E_seq[l] = E
             if l < self.n_layers - 1:
-                update_A = getattr(self, 'update_A{}'.format(l))
-                A = update_A(E)
+                update_a = getattr(self, 'update_a{}'.format(l))
+                A = update_a(E)
 
     def up_to_down(self, t, Ahat_seq, E_seq, R_seq, H_seq, total_loss, gt):
         for l in reversed(range(self.n_layers)):
@@ -174,8 +177,8 @@ class PredNet(nn.Module):
             E = torch.cat([pos, neg], 1)
             E_seq[l] = E
             if l < self.n_layers - 1:
-                update_A = getattr(self, 'update_A{}'.format(l))
-                A = update_A(E)
+                update_a = getattr(self, 'update_a{}'.format(l))
+                A = update_a(E)
 
         if self.output_mode == 'error':
             return frame_prediction, total_loss, eval_index

@@ -4,22 +4,16 @@ Utilities for flow prediction, including:
     image warping
     flow clipping
 '''
-import os
 import pathlib
-import sys
 import argparse
-import pdb
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torchvision import transforms
 
 import numpy as np
-from PIL import Image
 import cv2
 
-# from flow_models.pyflow import pyflow
 
 class PWCNet(nn.Module):
     def __init__(self, default=True):
@@ -37,6 +31,7 @@ class PWCNet(nn.Module):
 
         flow = pwcnet.estimate(im1, im2, self.pwcnet)
         return flow
+
 
 class RAFT(nn.Module):
     def __init__(self, model='things'):
@@ -58,11 +53,10 @@ class RAFT(nn.Module):
         args.small = False
         args.mixed_precision = True
         args.alternate_corr = False
-        #args.alternate_corr = True # TODO: This doesn't work :(
 
-        flowNet = nn.DataParallel(raft.RAFT(args))
-        flowNet.load_state_dict(torch.load(args.model, map_location='cpu'))
-        self.flowNet = flowNet.module
+        flow_net = nn.DataParallel(raft.RAFT(args))
+        flow_net.load_state_dict(torch.load(args.model, map_location='cpu'))
+        self.flow_net = flow_net.module
 
     def forward(self, im1, im2):
         '''
@@ -74,9 +68,10 @@ class RAFT(nn.Module):
         im2 = im2 * 255
 
         # Estimate flow
-        flow_low, flow_up = self.flowNet(im1, im2, iters=5, test_mode=True)
+        _, flow_up = self.flow_net(im1, im2, iters=5, test_mode=True)
 
         return flow_up
+
 
 class FBFlow(nn.Module):
     def __init__(self):
@@ -92,9 +87,6 @@ class FBFlow(nn.Module):
         for b in range(batch_size):
             cvim1 = np.array(im1.cpu().detach()[0].permute(1,2,0))
             cvim2 = np.array(im2.cpu().detach()[0].permute(1,2,0))
-
-            #cvim1 = cv2.cvtColor(cvim1, cv2.COLOR_BGR2GRAY) * 255
-            #cvim2 = cv2.cvtColor(cvim2, cv2.COLOR_BGR2GRAY) * 255
 
             # TODO: HANDLE greyscale images
             cvim1 = cvim1[:,:,0]
@@ -116,6 +108,7 @@ class FBFlow(nn.Module):
         flow = torch.cat(flows, dim=0)
         return flow
 
+
 def clip_flow(flow, thresh, reduction_clip=False, scale_clip=None):
     # Either apply tanh soft thresholding (reduce = False)
     # OR apply hard tresholding, and set large flows to 0 (reduce = True)
@@ -133,7 +126,8 @@ def clip_flow(flow, thresh, reduction_clip=False, scale_clip=None):
         return mask.unsqueeze(1) * flow
 
     return scale.unsqueeze(1) * flow
-    
+
+
 def normalize_flow(flow, im):
     '''
     Normalize pixel-offset flow to absolute [-1, 1] flow
@@ -172,4 +166,3 @@ def warp(im, flow, padding_mode='zeros'):
     warped = F.grid_sample(im, flow, padding_mode=padding_mode, align_corners=True)
 
     return warped
-

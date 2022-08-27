@@ -1,8 +1,11 @@
+import cv2
 import argparse
 import pathlib
 import numpy as np
 import datetime
-import cv2
+
+import numpy as np
+
 from tensorboard.backend.event_processing import event_accumulator
 
 
@@ -32,6 +35,7 @@ def main():
             dt = datetime.datetime.fromtimestamp(event.wall_time)
             outpath = dirpath / '{}_{}step.jpg'.format(dt.date(), event.step)
             cv2.imwrite(outpath.as_posix(), image)
+
 
 if __name__ == '__main__':
     main()

@@ -1,12 +1,16 @@
-import torch
+'''
+Class ConvLSTM
+
+Ref: https://gist.github.com/Kaixhin/57901e91e5c5a8bac3eb0cbbdd3aba81
+'''
 import math
+import torch
 import torch.nn as nn
 from torch.nn import Parameter
 from torch.nn import functional as F
 from torch.autograd import Variable
 from torch.nn.modules.utils import _pair
 
-# https://gist.github.com/Kaixhin/57901e91e5c5a8bac3eb0cbbdd3aba81
 
 class ConvLSTMCell(nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=1, dilation=1, groups=1, bias=True, amp=0.0, omg=1.0):

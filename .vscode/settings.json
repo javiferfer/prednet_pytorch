@@ -1,0 +1,25 @@
+{
+    "python.envFile": ".env",
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/*.pyc": true,
+        "**/__pycache__": true
+    },
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": true,
+    "python.autoComplete.extraPaths": [
+        "."
+    ],
+    "python.analysis.extraPaths": [
+        "."
+    ],
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
+}
