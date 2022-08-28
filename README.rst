@@ -93,6 +93,13 @@ If you train from dB files, execute the following command.
 python main.py --channels 2,48,96,192 --size 160,512
 ```
 
+In case you are having trouble with the dependencies, go to the https://pytorch.org/get-started/locally/ and look for the appropiate cudatoolkit. If you are using conda:
+
+```
+conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch
+```
+
+
 ================================
 Prediction
 ================================
